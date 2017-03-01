@@ -1,124 +1,126 @@
-Importing Data into CiviCRM
-===========================
+Import de données dans CiviCRM
+==============================
 
-Most organisations have data in sources outside CiviCRM, such as
-previously used database platforms, spreadsheets created on the fly for
-specific events or other purposes, and email address books. Because
-manually entering large amounts of data can be tedious, CiviCRM provides
-a way do import data en masse if the source can export it into some
-common format such as a Comma Separated Version (CSV) file.
+La plupart des organisations disposent de données à l'extérieur de CiviCRM,
+telles que des bases de données utilisées précédemment, des tableaux créés à la
+volée pour des événements spécifiques ou d'autres usages, et des répertoires
+d'adresses e-mail. Parce qu'entrer de grandes quantités de données manuellement
+peut être très fastidieux, CiviCRM propose une fonction d'import en masse si
+la source peut exporter les données dans un format commun tel qu'un fichier CSV
+(Comma Separated Version).
 
-Imports can also be used to update existing data. This will be covered
-in the final section of this chapter.
+Les imports peuvent aussi être utilisés pour mettre à jour les données. Cette 
+fonctionnalité sera abordée dans la section en fin de ce chapitre.
 
-Considerations before importing
--------------------------------
+Considérations avant l'import
+-----------------------------
 
-For more details on how to think about your data before importing into
-CiviCRM, please read the section on "Organizing your data", especially
-"Mapping your data into CiviCRM".
+Pour plus de détails à propos de l'organisation des données avant import dans
+CiviCRM, veuillez lire la section "Organiser vos données", et spécialement
+"Mapper vos données dans CiviCRM".
 
-Preparing to import data
-------------------------
+Préparation de l'import
+-----------------------
 
-Importing data requires considerable attention and care, so we'll
-present some concepts here that you should know before you start your
-first import. You can import both core and custom data for contacts, as
-well as data for event attendance, activities, memberships and
-contributions. This chapter will focus on the import process for
-contacts. The processes for other data are similar.
+L'import de données requiert une attention considérable et un grand soin, nous
+allons donc présenter ici quelques concepts que vous devriez connaître avant de
+commencer votre premier import. Vous pouvez importer à la fois des données de 
+base et des données personnalisées pour les contacts, comme pour les événements,
+les activités, les cotisations et les contributions. Ce chapitre se concentre
+sur le processus d'import pour les contacts. Le processus pour les autres données
+est similaire.
 
-There are two ways to import data:
+Il y a deux façons d'importer des données:
 
--   from CSV files. Most database and spreadsheet applications (e.g.
-    OpenOffice.org Calc, Google Spreadsheets, Microsoft Excel) can
-    create and manipulate files in this format. It is often easier to
-    view and clean your data when it's in a CSV file than while it's
-    still inside your old database.
+-   à partir de fichiers CSV. La plupart des applications de base de données et de
+    tableur (par exemple OpenOffice.org Calc, Google Spreadsheets, Microsoft Excel)
+    peuvent créer et manipuler des fichiers dans ce format. Il est souvent plus
+    facile d'afficher et de nettoyer vos données quand elles sont dans un fichier
+    CSV que lorsqu'elles sont dans votre ancienne base de données.
 
-    Each column in your CSV file will map to a field in CiviCRM, so make
-    sure you use a different column for every distinct bit of
+    Chaque colonne dans votre fichier CSV va correspondre à un champ dans CiviCRM, 
+    il faut donc s'assurer d'utiliser une colonne différente pour chaque
     information.
 
-    Depending on your country or region, fields in your CSV files might
-    be separated by semicolons (;) instead of commas. If so, you'll need
-    to change the Import/Export Field Separator value in the CiviCRM
-    Localization settings by going to the navigation menu and choosing
-    Administer > Configure > Global Settings > Localization.
+    En fonction de votre pays ou région, les champs dans votre fichier CSV peuvent
+    être séparés par des points-virgules (;) au lieu des virgules. Si c'est le cas,
+    vous devrez modifier la valeur du champ Séparateur Import/Export dans les
+    paramètres de Localisation de CiviCRM en allant dans le menu de navigation
+    Administrer > Configurer > Paramètres Globaux > Localisation.
 
--   from another SQL or MySQL database stored on the same server, using
-    an SQL query. (This option is only for advanced users who have a
-    clear understanding of server and database administration.)
+-   à partir d'une autre base de données SQL ou MySQL stockée sur le même serveur,
+    en utilisant une requête SQL. (Cette option est seulement pour les utilisateurs
+    avancés qui ont une bonne compréhension du serveur et de l'administration d'une
+    base de données.)
 
-If you do not have a clear understanding of your existing data and how
-it will map to CiviCRM fields, you will experience frustrations and
-problems when you try to import the data. Please read about each type of
-data in other sections of this CiviCRM Manual and visit the CiviCRM
-online documentation for more information:
+Si vous n'avez pas une bonne compréhension de vos données existantes et de comment
+elles seront converties en champs dans CiviCRM, vous allez ressentir une grande
+frustration par rapport aux problèmes rencontrés lors de l'import des données.
+Veuillez lire la description de chaque type de données dans les autres sections de
+ce manuel CiviCRM et visiter la documentation en ligne CiviCRM pour plus
+d'information:
 [http://wiki.civicrm.org/confluence/display/CRMDOC/Importing+Data](http://wiki.civicrm.org/confluence/display/CRMDOC/Importing+Data)
 
-The following rules and recommendations will help you to import data
-with minimal problems:
+Les règles et recommendations suivantes vont vous aider à importer vos données
+avec un minimum de problèmes:
 
--   Always test your data import with a small subset of your records.
-    After importing the test set, visit the records within CiviCRM and
-    ensure that the data was imported and functions as you expected.
--   It can be helpful to create a test contact that has every attribute
-    you've defined in your existing data set. Then import the contact
-    and check results to ensure that CiviCRM correctly represents all
-    the data.
--   When you map the columns or fields from your source data to CiviCRM
-    fields during the import, CiviCRM can save this field mapping as an
-    *import map* for future use. This is helpful if you will be
-    importing multiple files with the same structure. To save an import
-    map for future use, click the "Save this field mapping" check-box at
-    the bottom of the Match Fields screen of the import wizard and enter
-    an appropriate name and description. To reuse a saved import map,
-    select it from the Load Saved Field Mapping dropdown menu on the
-    Choose Data Source screen (step 1) of the import wizard.
--   If your imports are timing out or taking too long, try splitting up
-    the imports into smaller batches. If you have the appropriate
-    permissions on your web server, you can also increase the
-    memory_limit and max_execution_time values in the file php.ini.
--   You can add all of the contacts imported in an import to new or
-    existing groups or tags. All of the contacts in a single import will
-    be given the same groups and tags. This limitation has a couple
-    effects on your import:
-    -   Make sure that you assign groups and tags that are applicable to
-        every contact in the imported set. If you need to assign groups
-        or tags on a contact-by-contact basis, import contacts in small,
-        discrete batches in which all contacts share the same tags and
-        groups. Alternatively, you can create searchable custom data
-        fields in CiviCRM that contain the groups and tags that you want
-        to assign to imported contacts. After the import you can run
-        searches on those fields and use the "Add Contacts to Group" or
-        "Tag Contacts" batch actions on the search results.
-    -   You can use this feature to manage the import. Consider adding
-        contacts to a new group or tag that indicates what batch of
-        imports the contacts were a part of, thereby allowing you to
-        easily identify when a contact was imported and undo an entire
-        import if necessary.
--   CiviCRM stores first names and last names in separate fields, so
-    these should appear as separate columns in your CSV file. The same
-    goes for city and postal code/zip code. Most spreadsheet programs
-    contain tools that automate the process of splitting text across
-    fields.
--   Ensure that your country names are expressed in the same way as they
-    are in CiviCRM, i.e., 'United States', not 'United States of
-    America', and 'United Kingdom', not 'Britain'.
--   If you are importing multiple locations, the first location will be
-    set as the primary location address. You may want to move your
-    columns around to ensure that the desired location becomes the
-    Primary Location. You may also need to split your import so that
-    some records have one type of record as their Primary Location,
-    while others have a different one.
--   If you are importing data into multi-choice (e.g. check-box or radio
-    button) custom fields, your data source can use either the label
-    (what's visible to the user in the CiviCRM front end) or the value
-    (what's actually stored in the database for that choice). CiviCRM
-    will recognise it and import it appropriately. When importing into
-    multi-choice core data fields, you can specify only the value(s) in
-    your data source, not the label.
+-   Testez toujours votre import de données avec un petit nombre d'enregistrements.
+    Après l'import de ceux-ci, affichez-les dans CiviCRM afin de vous assurer que
+    les données ont été importées correctement et fonctionnent comme prévu.
+-   Il peut être utile de créer un contact de test qui contient tous les attributs
+    que vous avez définis dans le jeu de données. Importez ce contact et vérifiez
+    le résultat afin de vous assurer que toutes les données sont correctement
+    représentées dans CiviCRM.
+-   Lorsque vous mappez les colonnes ou les champs de vos données sources dans
+    CiviCRM pendant l'import, CiviCRM peut sauvegarder ce mapping des champs dans
+    une *import map* qui peut être réutilisée. Ceci est très utile pour importer
+    des fichiers multiples utilisant la même structure. Pour réaliser cette
+    sauvegarde, cliquez sur la case à cocher "Sauver ce mapping" en bas de
+    l'écran Correspondance des Champs de l'assistant d'import et entrez un nom
+    et une description appropriés. Pour réutiliser une *import map*,
+    sélectionnez-la à partir du menu déroulant Charger un mapping existant sur
+    l'écran Choix de la source de données (step 1) de l'assistant d'import.
+-   Si vos imports prennent trop de temps, essayez de diviser les données sources
+    en plusieurs lots plus petits. Si vous disposez des permissions appropriées
+    sur votre serveur web server, vous pouvez aussi augmenter les paramètres
+    memory_limit et max_execution_time values dans le fichier php.ini.
+-   Vous pouvez ajouter tous les contacts importés à de nouveaux groupes et tags,
+    ou à des existants. Tous les contacts d'un import donné recevront les mêmes
+    groupes et tags. Cette limitation a certains effets sur votre import:
+    -   Assurez-vous que les groupes et tags sont applicables à tous les contacts
+        repris dans un imported. Si vous devez assigner des groupes et tags au
+        cas par cas, alors il faut importer les contacts dans de petits lots
+        reprenant les contacts qui partagent les mêmes groupes et tags. Une
+        alternative est de créer des données personnalisées utilisables pour la
+        recherche dans CiviCRM et qui contiennent les groupes et tags que vous 
+        souhaitez assigner aux contacts importés. Après l'import vous pouvez
+        lancer une recherche sur ces champs et utiliser la fonction "Ajouter les
+        contact au Groupe" ou "Marquer les contacts" pour modifier en masse les
+        contacts.
+    -   Vous pouvez utiliser cette fonctionnalité pour gérer les imports. En effet
+        vous pouvez ajouter les contacts à un nouveau groupe ou tag qui indique
+        de quel lot de données les contacts faisaient partie, ce qui permet de les
+        identifier facilement, et de pouvoir les traiter en masse si nécessaire.
+-   CiviCRM stocke le prénom et le nom dans des champs séparés, ils doivent donc
+    apparaître comme des colonnes séparées du fichier CSV. Il en va de même pour
+    la ville et le code postal. La plupart des tableurs contiennent des outils qui
+    automatisent le processus de séparation de texte sur plusieurs champs.
+-   Assurez-vous que les noms de pays sont exprimés de la même façon que dans
+    CiviCRM, par exemple 'United States' et pas 'United States of
+    America', ou 'United Kingdom' et pas 'Britain'.
+-   Si vous importez plusieurs emplacements, le premier sera considéré comme
+    adresse principale. Vous pouvez déplacer les colonnes dans le fichier CSV afin
+    de vous assurer le bon emplacement est considéré comme adresse principale.
+    Vous pouvez également diviser votre import afin que certains enregistrements
+    utilisent un type d'emplacement comme adresse principale, et d'autres en utilisent
+    un différent.
+-   Si vous importez des données dans un champ personnalisé à choix multiple (par
+    exemple une case à cocher ou un radio-bouton) vos données sources peuvent être
+    représentées soit par le libellé (ce qui est visible pour l'utilisateur dans
+    CiviCRM) ou la valeur (ce qui est effectivement stocké dans la base de données
+    pour cette sélection). CiviCRM reconnaît et importe le champ automatiquement.
+    Lors de l'import dans un champ de base à choix multiple, vous ne pouvez utiliser
+    que les valeurs, pas les libellés.
 -   If you are updating multiple choice options, new values will replace
     the entire field. For example, if you update the value of the Colors
     field to be "orange" for a contact that currently has Colors set to
